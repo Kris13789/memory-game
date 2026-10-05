@@ -1,7 +1,11 @@
 import { createDeck as createShuffledDeck, PAIRS_TOTAL } from './cards.js';
 
+export const MISMATCH_DELAY_MS = 1000;
+
 export function createGame({
   createDeck = createShuffledDeck,
+  schedule = setTimeout,
+  delay = MISMATCH_DELAY_MS,
   onChange = () => {},
   onWin = () => {},
 } = {}) {
@@ -21,15 +25,23 @@ export function createGame({
       moves: 0,
       matchedPairs: 0,
       firstIndex: null,
+      isLocked: false,
       isOver: false,
     };
+    emitChange();
+  }
+
+  function closeMismatch(firstIndex, secondIndex) {
+    state.cards[firstIndex].isOpen = false;
+    state.cards[secondIndex].isOpen = false;
+    state.isLocked = false;
     emitChange();
   }
 
   function flipCard(index) {
     const card = state.cards[index];
 
-    if (!card || state.isOver || card.isOpen || card.isMatched) {
+    if (!card || state.isOver || state.isLocked || card.isOpen || card.isMatched) {
       return;
     }
 
@@ -45,13 +57,17 @@ export function createGame({
     state.firstIndex = null;
     state.moves += 1;
 
-    if (state.cards[firstIndex].faceId === card.faceId) {
-      state.cards[firstIndex].isMatched = true;
-      card.isMatched = true;
-      state.matchedPairs += 1;
-      state.isOver = state.matchedPairs === PAIRS_TOTAL;
+    if (state.cards[firstIndex].faceId !== card.faceId) {
+      state.isLocked = true;
+      schedule(() => closeMismatch(firstIndex, index), delay);
+      emitChange();
+      return;
     }
 
+    state.cards[firstIndex].isMatched = true;
+    card.isMatched = true;
+    state.matchedPairs += 1;
+    state.isOver = state.matchedPairs === PAIRS_TOTAL;
     emitChange();
 
     if (state.isOver) {
