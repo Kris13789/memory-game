@@ -1,0 +1,51 @@
+import { el } from './dom.js';
+import { createGame } from './game/game.js';
+import { createLeaderboard } from './storage/leaderboard.js';
+import { createBoard } from './ui/board.js';
+import { createHeader } from './ui/header.js';
+import { buildLeaderboardContent } from './ui/leaderboardContent.js';
+import { createModal } from './ui/modal.js';
+import { createStats } from './ui/stats.js';
+import { buildWinContent } from './ui/winContent.js';
+
+const leaderboard = createLeaderboard();
+const modal = createModal();
+const stats = createStats();
+const board = createBoard({ onCardClick: (index) => game.flipCard(index) });
+
+function renderGame(state) {
+  stats.render(state);
+  board.render(state);
+}
+
+function startNewGame() {
+  modal.close();
+  game.startNewGame();
+}
+
+function showWin({ moves }) {
+  leaderboard.save(moves);
+  modal.open(buildWinContent({ moves, onNewGame: startNewGame, onClose: modal.close }), 'Victory');
+}
+
+function showLeaderboard() {
+  modal.open(
+    buildLeaderboardContent({ results: leaderboard.getTop(), onClose: modal.close }),
+    'Leaderboard',
+  );
+}
+
+const game = createGame({ onChange: renderGame, onWin: showWin });
+const header = createHeader({ onNewGame: startNewGame, onLeaderboard: showLeaderboard });
+
+document.body.append(
+  el(
+    'div',
+    { className: 'app' },
+    header,
+    el('main', { className: 'main' }, stats.element, board.element),
+  ),
+  modal.element,
+);
+
+game.startNewGame();

@@ -1,0 +1,70 @@
+.modal {
+  width: min(92vw, 440px);
+  max-height: 88vh;
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow);
+}
+
+.modal::backdrop {
+  background: rgba(15, 20, 40, 0.6);
+}
+
+.modal__content {
+  padding: 1.5rem;
+}
+
+.modal__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.5rem;
+}
+
+.modal__text {
+  margin: 0 0 1.25rem;
+}
+
+.modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.leaderboard {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  border-collapse: collapse;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.leaderboard th {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.leaderboard tbody tr:first-child td {
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .modal__content {
+    padding: 1.25rem;
+  }
+
+  .modal__actions .button {
+    flex: 1;
+  }
+}
