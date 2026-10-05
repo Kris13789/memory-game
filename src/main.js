@@ -3,6 +3,7 @@ import { createGame } from './game/game.js';
 import { createLeaderboard } from './storage/leaderboard.js';
 import { createBoard } from './ui/board.js';
 import { createHeader } from './ui/header.js';
+import { buildLeaderboardContent } from './ui/leaderboardContent.js';
 import { createModal } from './ui/modal.js';
 import { createStats } from './ui/stats.js';
 import { buildWinContent } from './ui/winContent.js';
@@ -27,11 +28,15 @@ function showWin({ moves }) {
   modal.open(buildWinContent({ moves, onNewGame: startNewGame, onClose: modal.close }), 'Victory');
 }
 
+function showLeaderboard() {
+  modal.open(
+    buildLeaderboardContent({ results: leaderboard.getTop(), onClose: modal.close }),
+    'Leaderboard',
+  );
+}
+
 const game = createGame({ onChange: renderGame, onWin: showWin });
-const header = createHeader({
-  onNewGame: startNewGame,
-  onLeaderboard: () => {},
-});
+const header = createHeader({ onNewGame: startNewGame, onLeaderboard: showLeaderboard });
 
 document.body.append(
   el(
