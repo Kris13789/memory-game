@@ -58,3 +58,13 @@
 .leaderboard tbody tr:first-child td {
   font-weight: 700;
 }
+
+@media (max-width: 480px) {
+  .modal__content {
+    padding: 1.25rem;
+  }
+
+  .modal__actions .button {
+    flex: 1;
+  }
+}
