@@ -5,11 +5,14 @@ export const MISMATCH_DELAY_MS = 1000;
 export function createGame({
   createDeck = createShuffledDeck,
   schedule = setTimeout,
+  cancel = clearTimeout,
   delay = MISMATCH_DELAY_MS,
   onChange = () => {},
   onWin = () => {},
 } = {}) {
   let state = null;
+  let timerId = null;
+  let gameToken = 0;
 
   function snapshot() {
     return { ...state, cards: state.cards.map((card) => ({ ...card })) };
@@ -20,6 +23,12 @@ export function createGame({
   }
 
   function startNewGame() {
+    if (timerId !== null) {
+      cancel(timerId);
+      timerId = null;
+    }
+
+    gameToken += 1;
     state = {
       cards: createDeck().map((card) => ({ ...card, isOpen: false, isMatched: false })),
       moves: 0,
@@ -31,10 +40,15 @@ export function createGame({
     emitChange();
   }
 
-  function closeMismatch(firstIndex, secondIndex) {
+  function closeMismatch(token, firstIndex, secondIndex) {
+    if (token !== gameToken) {
+      return;
+    }
+
     state.cards[firstIndex].isOpen = false;
     state.cards[secondIndex].isOpen = false;
     state.isLocked = false;
+    timerId = null;
     emitChange();
   }
 
@@ -58,8 +72,9 @@ export function createGame({
     state.moves += 1;
 
     if (state.cards[firstIndex].faceId !== card.faceId) {
+      const token = gameToken;
       state.isLocked = true;
-      schedule(() => closeMismatch(firstIndex, index), delay);
+      timerId = schedule(() => closeMismatch(token, firstIndex, index), delay);
       emitChange();
       return;
     }
