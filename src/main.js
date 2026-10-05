@@ -1,11 +1,13 @@
 import { el } from './dom.js';
 import { createGame } from './game/game.js';
+import { createLeaderboard } from './storage/leaderboard.js';
 import { createBoard } from './ui/board.js';
 import { createHeader } from './ui/header.js';
 import { createModal } from './ui/modal.js';
 import { createStats } from './ui/stats.js';
 import { buildWinContent } from './ui/winContent.js';
 
+const leaderboard = createLeaderboard();
 const modal = createModal();
 const stats = createStats();
 const board = createBoard({ onCardClick: (index) => game.flipCard(index) });
@@ -21,6 +23,7 @@ function startNewGame() {
 }
 
 function showWin({ moves }) {
+  leaderboard.save(moves);
   modal.open(buildWinContent({ moves, onNewGame: startNewGame, onClose: modal.close }), 'Victory');
 }
 
