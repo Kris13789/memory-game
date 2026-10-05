@@ -1,0 +1,11 @@
+{
+  "name": "memory-game",
+  "version": "1.0.0",
+  "description": "Memory card game built with vanilla JavaScript",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx --yes serve .",
+    "test": "node --test"
+  }
+}
