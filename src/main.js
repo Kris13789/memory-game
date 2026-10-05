@@ -4,6 +4,7 @@ import { createBoard } from './ui/board.js';
 import { createHeader } from './ui/header.js';
 import { createModal } from './ui/modal.js';
 import { createStats } from './ui/stats.js';
+import { buildWinContent } from './ui/winContent.js';
 
 const modal = createModal();
 const stats = createStats();
@@ -19,7 +20,11 @@ function startNewGame() {
   game.startNewGame();
 }
 
-const game = createGame({ onChange: renderGame });
+function showWin({ moves }) {
+  modal.open(buildWinContent({ moves, onNewGame: startNewGame, onClose: modal.close }), 'Victory');
+}
+
+const game = createGame({ onChange: renderGame, onWin: showWin });
 const header = createHeader({
   onNewGame: startNewGame,
   onLeaderboard: () => {},
